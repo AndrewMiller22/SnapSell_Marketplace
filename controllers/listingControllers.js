@@ -17,10 +17,10 @@ const getListings = async (req, res) => {
     }
 
     if (req.query.location) {
-      filter.location = {
-        $regex: req.query.location,
-        $options: "i"
-      };
+      filter.$or = (filter.$or || []).concat([
+        { "location.city": { $regex: req.query.location, $options: "i" } },
+        { "location.address": { $regex: req.query.location, $options: "i" } }
+      ]);
     }
 
     if (req.query.search) {
@@ -93,7 +93,11 @@ const getListingById = async (req, res) => {
 // POST /api/listings
 const createListing = async (req, res) => {
   try {
-    const listing = await Listing.create(req.body);
+    const listing = await Listing.create({
+      ...req.body,
+      sellerName: req.user.fullName,
+      sellerEmail: req.user.email
+    });
 
     res.status(201).json({
       success: true,

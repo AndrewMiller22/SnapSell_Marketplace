@@ -8,18 +8,20 @@ const {
   deleteListing
 } = require("../controllers/listingControllers");
 
+const { protect } = require("../middleware/authMiddleware");
+
 const router = express.Router();
 
 router
   .route("/")
   .get(getListings)
-  .post(createListing);
+  .post(protect, createListing);
 
 router
   .route("/:id")
   .get(getListingById)
-  .put(updateListing)
-  .patch(updateListing)
-  .delete(deleteListing);
+  .put(protect, updateListing)
+  .patch(protect, updateListing)
+  .delete(protect, deleteListing);
 
 module.exports = router;
