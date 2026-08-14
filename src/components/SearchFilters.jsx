@@ -10,7 +10,7 @@ const CATEGORIES = [
   'Other',
 ];
 
-const STATUSES = ['Available', 'Pending', 'Sold', 'Expired'];
+const STATUSES = ['Available', 'Pending', 'Sold'];
 
 export default function SearchFilters({ filters, onChange, onReset }) {
   const handleChange = (e) => {
