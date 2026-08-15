@@ -1,3 +1,11 @@
+/**
+ * SnapSell Marketplace - Listing Model
+ *
+ * Developers: 
+ *
+ * Stores marketplace listings and associates each listing with its owner.
+ */
+
 const mongoose = require("mongoose");
 
 const listingSchema = new mongoose.Schema(
@@ -6,6 +14,7 @@ const listingSchema = new mongoose.Schema(
       type: String,
       required: [true, "A listing title is required"],
       trim: true,
+      minlength: [3, "The title must be at least 3 characters"],
       maxlength: [100, "The title cannot exceed 100 characters"]
     },
 
@@ -13,7 +22,8 @@ const listingSchema = new mongoose.Schema(
       type: String,
       required: [true, "A description is required"],
       trim: true,
-      maxlength: [600, "Max is 600 characters"]
+      minlength: [10, "The description must be at least 10 characters"],
+      maxlength: [600, "The description cannot exceed 600 characters"]
     },
 
     price: {
@@ -56,61 +66,24 @@ const listingSchema = new mongoose.Schema(
 
       city: {
         type: String,
+        required: [true, "A city is required"],
         trim: true
       },
 
       province: {
         type: String,
-        trim: true
+        required: [true, "A province is required"],
+        trim: true,
+        uppercase: true,
+        minlength: [2, "Use a two-letter province code"],
+        maxlength: [2, "Use a two-letter province code"]
       },
 
       postalCode: {
         type: String,
         trim: true,
         uppercase: true
-      },
-
-      geoPoint: {
-        type: {
-          type: String,
-          enum: ["Point"],
-          default: "Point"
-        },
-
-        coordinates: {
-          type: [Number],
-          default: undefined,
-          validate: {
-            validator: function (coordinates) {
-              return (
-                coordinates === undefined ||
-                (
-                  coordinates.length === 2 &&
-                  coordinates[0] >= -180 &&
-                  coordinates[0] <= 180 &&
-                  coordinates[1] >= -90 &&
-                  coordinates[1] <= 90
-                )
-              );
-            },
-            message:
-              "Coordinates must be provided as [longitude, latitude]"
-          }
-        }
       }
-    },
-
-    sellerName: {
-      type: String,
-      required: [true, "A seller name is required"],
-      trim: true
-    },
-
-    sellerEmail: {
-      type: String,
-      required: [true, "A seller email is required"],
-      trim: true,
-      lowercase: true
     },
 
     images: {
@@ -120,17 +93,53 @@ const listingSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["Available", "Pending", "Sold"],
+      enum: ["Available", "Pending", "Sold", "Expired"],
       default: "Available"
+    },
+
+    activeDate: {
+      type: Date,
+      default: Date.now
+    },
+
+    expiryDate: {
+      type: Date,
+      default: null,
+      validate: {
+        validator: function (expiryDate) {
+          return (
+            expiryDate === null ||
+            expiryDate === undefined ||
+            expiryDate > this.activeDate
+          );
+        },
+        message: "The expiry date must be after the active date"
+      }
+    },
+
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "A listing owner is required"],
+      index: true
+    },
+
+    sellerName: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    sellerEmail: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true
     }
   },
   {
     timestamps: true
   }
 );
-
-listingSchema.index({
-  "location.geoPoint": "2dsphere"
-});
 
 module.exports = mongoose.model("Listing", listingSchema);

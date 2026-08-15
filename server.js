@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 
 const connectDatabase = require("./config/db");
 const listingRoutes = require("./routes/listingRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 dotenv.config();
 
@@ -21,7 +22,9 @@ app.get("/", (req, res) => {
   });
 });
 
+
 app.use("/api/listings", listingRoutes);
+app.use("/api/users", userRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
