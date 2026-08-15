@@ -7,14 +7,13 @@ import Home from './pages/Home';
 import Marketplace from './pages/Marketplace';
 import ListingDetails from './pages/ListingDetails';
 import NotFound from './pages/NotFound';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 /*
- * PERSON 1 – uncomment these three imports once you create the pages:
- * import Login from './pages/Login';
- * import Register from './pages/Register';
- * import Profile from './pages/Profile';
- *
  * PERSON 2 – uncomment these once you create the pages:
  * import CreateListing from './pages/CreateListing';
  * import EditListing from './pages/EditListing';
@@ -32,10 +31,19 @@ export default function App() {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/listings/:id" element={<ListingDetails />} />
 
-          {/* Person 1 – replace null with your page components */}
-          <Route path="/login" element={null} />
-          <Route path="/register" element={null} />
-          <Route path="/profile" element={null} />
+          {/* Public auth routes (Person 1) */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Secure route (Person 1) - anonymous visitors are sent to login */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Person 2 – replace null with your page components */}
           <Route path="/listings/create" element={null} />

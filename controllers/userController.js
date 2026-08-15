@@ -111,9 +111,7 @@ const loginUser = async (req, res) => {
     }
 
     // The password is hidden by default, so ask for it here
-    const user = await User.findOne({ email: email.toLowerCase() }).select(
-      "+password"
-    );
+    const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
 
     // A wrong email and a wrong password give the same message on purpose
     // Saying which one was wrong would let someone find out which emails have
@@ -142,9 +140,8 @@ const loginUser = async (req, res) => {
 
 // POST /api/users/logout - protected
 const logoutUser = async (req, res) => {
-  // JWTs are stateless, so there is no session on the server to end. The client
-  // deletes its saved token when it gets this response, and the token expires
-  // on its own after 7 days
+  // JWTs are stateless, so there is no session on the server to end.
+  // the token expires on its own after 7 days
   res.status(200).json({
     success: true,
     message: "Logged out successfully"
