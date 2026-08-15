@@ -1,9 +1,5 @@
-/**
- * SnapSell Marketplace - Authentication Middleware
- *
- * Developers (Jakob Lalicon): [301498508]
- *
- * Protects the secure routes.*/
+//SnapSell Marketplace - Authentication Middleware
+//Protects the secure routes.
 
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
