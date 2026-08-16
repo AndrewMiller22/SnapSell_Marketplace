@@ -5,9 +5,13 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchListingById } from '../api/listingsApi';
 import StatusBadge from '../components/StatusBadge';
 import LoadingSpinner from '../components/LoadingSpinner';
+import QuestionSection from '../components/QuestionSection';
+import ListingHistory from '../components/ListingHistory';
+import { useAuth } from '../context/AuthContext';
 
 export default function ListingDetails() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,6 +54,9 @@ export default function ListingDetails() {
     status,
     createdAt,
   } = listing;
+
+  const ownerId = listing.owner?._id || listing.owner;
+  const isOwner = Boolean(user?.id && ownerId && String(user.id) === String(ownerId));
 
   return (
     <div className="container my-5">
@@ -153,12 +160,16 @@ export default function ListingDetails() {
             {description}
           </p>
 
-          {/* Placeholder for Person 4's question form */}
-          <div className="alert alert-info small mt-4" role="note">
-            💬 Have a question about this listing? The Q&amp;A section will appear here.
-          </div>
+          {isOwner && (
+            <Link to={`/listings/edit/${id}`} className="btn btn-primary btn-sm mt-2">
+              Edit Listing
+            </Link>
+          )}
+
         </div>
       </div>
+      {!isOwner && <QuestionSection listingId={id} />}
+      <ListingHistory listingId={id} />
     </div>
   );
 }

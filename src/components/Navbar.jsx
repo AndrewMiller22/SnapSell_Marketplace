@@ -45,6 +45,20 @@ export default function Navbar() {
                 Home
               </NavLink>
             </li>
+
+            {isAuthenticated && (
+              <li className="nav-item">
+                <NavLink
+                  className={({ isActive }) =>
+                    'nav-link' + (isActive ? ' active fw-semibold' : '')
+                  }
+                  to="/listings/create"
+                >
+                  Post Listing
+                </NavLink>
+              </li>
+            )}
+
             <li className="nav-item">
               <NavLink
                 className={({ isActive }) =>
@@ -59,6 +73,16 @@ export default function Navbar() {
             {/* Auth links – swap based on login state */}
             {isAuthenticated ? (
               <>
+                <li className="nav-item">
+                  <NavLink
+                    className={({ isActive }) =>
+                      'nav-link' + (isActive ? ' active fw-semibold' : '')
+                    }
+                    to="/seller/messages"
+                  >
+                    Messages
+                  </NavLink>
+                </li>
                 <li className="nav-item">
                   <NavLink
                     className={({ isActive }) =>

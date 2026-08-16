@@ -1,5 +1,5 @@
 /* SnapSell Marketplace - Login Page
-  Description: Sends the email and password to the API, saves the returned user
+  Description: Sends the login identifier and password to the API, saves the returned user
   and token, then redirects. */
 
 import { useState } from 'react';
@@ -8,7 +8,7 @@ import { loginUser } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ identifier: '', password: '' });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -33,7 +33,7 @@ export default function Login() {
       login(response.data, response.token);
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      // The API sends a readable message, e.g. "Invalid email or password"
+      // The API sends a readable message, e.g. "Invalid login details"
       setError(err.response?.data?.message || 'Unable to log in. Please try again.');
     } finally {
       setSubmitting(false);
@@ -59,14 +59,15 @@ export default function Login() {
 
               <form onSubmit={handleSubmit} noValidate>
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">Email</label>
+                  <label htmlFor="identifier" className="form-label">Email, phone number or username</label>
                   <input
-                    type="email"
+                    type="text"
                     className="form-control"
-                    id="email"
-                    name="email"
-                    value={form.email}
+                    id="identifier"
+                    name="identifier"
+                    value={form.identifier}
                     onChange={handleChange}
+                    autoComplete="username"
                     required
                   />
                 </div>
