@@ -1,6 +1,6 @@
 ﻿
 
-import { Navigate, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -11,12 +11,11 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import ProtectedRoute from './components/ProtectedRoute';
-import SellerQuestions from './pages/SellerQuestions';
-import CreateListing from './pages/CreateListing';
 import './App.css';
 
 /*
- * PERSON 2 – uncomment these once you create the remaining pages:
+ * PERSON 2 – uncomment these once you create the pages:
+ * import CreateListing from './pages/CreateListing';
  * import EditListing from './pages/EditListing';
  * import MyListings from './pages/MyListings';
  */
@@ -25,7 +24,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Navbar />
-      <main className="app-main">
+      <main>
         <Routes>
           {/* Public marketplace routes (Person 3) */}
           <Route path="/" element={<Home />} />
@@ -46,43 +45,15 @@ export default function App() {
             }
           />
 
-          <Route
-            path="/seller/messages"
-            element={
-              <ProtectedRoute>
-                <SellerQuestions />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Keep old bookmarks working while presenting the feature as Messages. */}
-          <Route path="/seller/questions" element={<Navigate to="/seller/messages" replace />} />
-
-          <Route
-            path="/listings/create"
-            element={
-              <ProtectedRoute>
-                <CreateListing />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/listings/edit/:id"
-            element={
-              <ProtectedRoute>
-                <CreateListing />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Person 2 – replace null with your remaining page components */}
+          {/* Person 2 – replace null with your page components */}
+          <Route path="/listings/create" element={null} />
+          <Route path="/listings/edit/:id" element={null} />
           <Route path="/my-listings" element={null} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <footer className="app-footer bg-dark text-white-50 text-center py-3 small">
+      <footer className="bg-dark text-white-50 text-center py-3 mt-5 small">
         {`(c) ${new Date().getFullYear()} SnapSell Marketplace`}
       </footer>
     </AuthProvider>

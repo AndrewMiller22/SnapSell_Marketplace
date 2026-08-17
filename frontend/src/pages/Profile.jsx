@@ -6,19 +6,12 @@ import { useState, useEffect } from 'react';
 import { getUserProfile, updateUserProfile } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import {
-  isValidEmail,
-  isValidPhone,
-  normalizeEmail,
-  normalizePhone
-} from '../utils/contactValidation';
 
 export default function Profile() {
   const [form, setForm] = useState({
     fullName: '',
     username: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: ''
   });
@@ -38,8 +31,7 @@ export default function Profile() {
           ...current,
           fullName: response.data.fullName,
           username: response.data.username,
-          email: response.data.email,
-          phone: response.data.phone || ''
+          email: response.data.email
         }));
         setJoinedOn(response.data.createdAt);
       })
@@ -61,24 +53,13 @@ export default function Profile() {
       return;
     }
 
-    if (!isValidEmail(form.email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-
-    if (!isValidPhone(form.phone)) {
-      setError('Please enter a valid 10-digit phone number.');
-      return;
-    }
-
     setSaving(true);
 
     try {
       const updates = {
         fullName: form.fullName,
         username: form.username,
-        email: normalizeEmail(form.email),
-        phone: normalizePhone(form.phone)
+        email: form.email
       };
 
       // Only send a password when a new one was typed
@@ -163,25 +144,7 @@ export default function Profile() {
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    required
                   />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="phone" className="form-label">Phone number</label>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    className="form-control"
-                    id="phone"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    placeholder="4165550123"
-                    autoComplete="tel"
-                    required
-                  />
-                  <div className="form-text">Exactly 10 digits are required.</div>
                 </div>
 
                 <hr className="my-4" />

@@ -3,27 +3,18 @@
   API, then logs them straight in. */
 
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../api/authApi';
 import { useAuth } from '../context/AuthContext';
-import {
-  isValidEmail,
-  isValidPhone,
-  normalizeEmail,
-  normalizePhone
-} from '../utils/contactValidation';
 
 export default function Register() {
-  const location = useLocation();
-  const signupContact = location.state?.signupContact;
-  const [form, setForm] = useState(() => ({
+  const [form, setForm] = useState({
     fullName: '',
     username: '',
-    email: signupContact?.type === 'email' ? signupContact.value : '',
-    phone: signupContact?.type === 'phone' ? signupContact.value : '',
+    email: '',
     password: '',
     confirmPassword: ''
-  }));
+  });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -32,22 +23,11 @@ export default function Register() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    if (error) setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
-    if (!isValidEmail(form.email)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-
-    if (!isValidPhone(form.phone)) {
-      setError('Please enter a valid 10-digit phone number.');
-      return;
-    }
 
     // The API never sees confirmPassword, so it is checked here
     if (form.password !== form.confirmPassword) {
@@ -61,8 +41,7 @@ export default function Register() {
       const response = await registerUser({
         fullName: form.fullName,
         username: form.username,
-        email: normalizeEmail(form.email),
-        phone: normalizePhone(form.phone),
+        email: form.email,
         password: form.password
       });
 
@@ -132,23 +111,6 @@ export default function Register() {
                     onChange={handleChange}
                     required
                   />
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="phone" className="form-label">Phone number</label>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    className="form-control"
-                    id="phone"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    placeholder="4165550123"
-                    autoComplete="tel"
-                    required
-                  />
-                  <div className="form-text">Enter exactly 10 digits. Spaces and dashes are accepted.</div>
                 </div>
 
                 <div className="mb-3">
