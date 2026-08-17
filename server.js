@@ -12,6 +12,8 @@ const dotenv = require("dotenv");
 const connectDatabase = require("./config/db");
 const listingRoutes = require("./routes/listingRoutes");
 const userRoutes = require("./routes/userRoutes");
+const questionRoutes = require("./routes/questionRoutes");
+const historyRoutes = require("./routes/historyRoutes");
 
 dotenv.config();
 
@@ -30,7 +32,9 @@ const app = express();
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "http://localhost:5173"
 }));
-app.use(express.json());
+// Photo attachments are sent as data URLs. Three 3 MB files encode to roughly
+// 12 MB, so this stays below MongoDB's 16 MB document limit.
+app.use(express.json({ limit: "15mb" }));
 
 // --- API status ---
 
@@ -45,6 +49,19 @@ app.get("/", (req, res) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/listings", listingRoutes);
+app.use("/api/questions", questionRoutes);
+app.use("/api/history", historyRoutes);
+
+app.use((error, req, res, next) => {
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({
+      success: false,
+      message: "The selected photos are too large. Choose up to three photos of 3 MB or less each."
+    });
+  }
+
+  next(error);
+});
 
 // --- Unmatched routes ---
 

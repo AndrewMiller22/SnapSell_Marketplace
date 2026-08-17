@@ -5,6 +5,12 @@
 
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const {
+  normalizeEmail,
+  normalizePhone,
+  isValidEmail,
+  isValidPhone
+} = require("../utils/contactValidation");
 
 // Creates a login token that lasts 7 days
 // Only the user id is stored inside it
@@ -19,6 +25,7 @@ const publicUser = (user) => ({
   id: user._id,
   username: user.username,
   email: user.email,
+  phone: user.phone || "",
   fullName: user.fullName,
   createdAt: user.createdAt
 });
@@ -34,7 +41,13 @@ const getValidationMessage = (error) => {
 
   // Error 11000 means a unique field was duplicated
   if (error.code === 11000) {
-    return "That username or email is already registered";
+    if (error.keyPattern?.phone || error.keyValue?.phone) {
+      return "An account with that phone number already exists";
+    }
+    if (error.keyPattern?.email || error.keyValue?.email) {
+      return "An account with that email address already exists";
+    }
+    return "That username is already registered";
   }
 
   return null;
@@ -43,22 +56,49 @@ const getValidationMessage = (error) => {
 // POST /api/users/register - public
 const registerUser = async (req, res) => {
   try {
-    const { username, email, password, fullName } = req.body;
+    const username = typeof req.body.username === "string" ? req.body.username.trim() : "";
+    const email = normalizeEmail(req.body.email);
+    const phone = normalizePhone(req.body.phone);
+    const password = typeof req.body.password === "string" ? req.body.password : "";
+    const fullName = typeof req.body.fullName === "string" ? req.body.fullName.trim() : "";
 
-    if (!username || !email || !password || !fullName) {
+    if (!username || !email || !phone || !password || !fullName) {
       return res.status(400).json({
         success: false,
-        message: "Please provide a username, email, password and full name"
+        message: "Please provide a full name, username, email, phone number and password"
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address"
+      });
+    }
+
+    if (!isValidPhone(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid 10-digit phone number"
       });
     }
 
     // Checked here so the message can say which one is taken
-    const emailTaken = await User.findOne({ email: email.toLowerCase() });
+    const emailTaken = await User.findOne({ email });
 
     if (emailTaken) {
       return res.status(409).json({
         success: false,
         message: "An account with that email address already exists"
+      });
+    }
+
+    const phoneTaken = await User.findOne({ phone });
+
+    if (phoneTaken) {
+      return res.status(409).json({
+        success: false,
+        message: "An account with that phone number already exists"
       });
     }
 
@@ -71,7 +111,7 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const user = await User.create({ username, email, password, fullName });
+    const user = await User.create({ username, email, phone, password, fullName });
 
     // A new user is logged in straight away and then log in with the same details
     res.status(201).json({
@@ -101,25 +141,36 @@ const registerUser = async (req, res) => {
 // POST /api/users/login - public
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const rawIdentifier = req.body.identifier ?? req.body.email ?? req.body.phone;
+    const identifier = typeof rawIdentifier === "string" ? rawIdentifier.trim() : "";
+    const password = typeof req.body.password === "string" ? req.body.password : "";
 
-    if (!email || !password) {
+    if (!identifier || !password) {
       return res.status(400).json({
         success: false,
-        message: "Please provide an email address and password"
+        message: "Please provide your email, phone number or username and password"
       });
     }
 
     // The password is hidden by default, so ask for it here
-    const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
+    let loginQuery;
+    if (isValidEmail(identifier)) {
+      loginQuery = { email: normalizeEmail(identifier) };
+    } else if (isValidPhone(identifier)) {
+      loginQuery = { phone: normalizePhone(identifier) };
+    } else {
+      loginQuery = { username: identifier };
+    }
 
-    // A wrong email and a wrong password give the same message on purpose
-    // Saying which one was wrong would let someone find out which emails have
+    const user = await User.findOne(loginQuery).select("+password");
+
+    // A wrong identifier and a wrong password give the same message on purpose
+    // Saying which one was wrong would let someone find out which details have
     // SnapSell accounts
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password"
+        message: "Invalid login details"
       });
     }
 
@@ -185,21 +236,54 @@ const updateUserProfile = async (req, res) => {
       });
     }
 
-    const { username, email, fullName, password } = req.body;
+    const { username, email, phone, fullName, password } = req.body;
 
     // Only check for duplicates when the value is actually changing, otherwise
     // saving the profile without edits would fail against the user's own record
-    if (email && email.toLowerCase() !== user.email) {
-      const emailTaken = await User.findOne({ email: email.toLowerCase() });
-
-      if (emailTaken) {
-        return res.status(409).json({
+    if (email !== undefined) {
+      const normalizedEmail = normalizeEmail(email);
+      if (!isValidEmail(normalizedEmail)) {
+        return res.status(400).json({
           success: false,
-          message: "An account with that email address already exists"
+          message: "Please provide a valid email address"
         });
       }
 
-      user.email = email;
+      if (normalizedEmail !== user.email) {
+        const emailTaken = await User.findOne({ email: normalizedEmail });
+
+        if (emailTaken) {
+          return res.status(409).json({
+            success: false,
+            message: "An account with that email address already exists"
+          });
+        }
+
+        user.email = normalizedEmail;
+      }
+    }
+
+    if (phone !== undefined) {
+      const normalizedPhone = normalizePhone(phone);
+      if (!isValidPhone(normalizedPhone)) {
+        return res.status(400).json({
+          success: false,
+          message: "Please provide a valid 10-digit phone number"
+        });
+      }
+
+      if (normalizedPhone !== user.phone) {
+        const phoneTaken = await User.findOne({ phone: normalizedPhone });
+
+        if (phoneTaken) {
+          return res.status(409).json({
+            success: false,
+            message: "An account with that phone number already exists"
+          });
+        }
+
+        user.phone = normalizedPhone;
+      }
     }
 
     if (username && username !== user.username) {

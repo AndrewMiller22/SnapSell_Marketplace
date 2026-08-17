@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 // When the token is valid it sets:
-// req.user = { id, username, email, fullName }
+// req.user = { id, username, email, phone, fullName }
 
 const protect = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -37,6 +37,7 @@ const protect = async (req, res, next) => {
       id: user._id.toString(),
       username: user.username,
       email: user.email,
+      phone: user.phone || "",
       fullName: user.fullName
     };
 

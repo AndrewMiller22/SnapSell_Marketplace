@@ -8,6 +8,12 @@
 
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const {
+  EMAIL_PATTERN,
+  PHONE_PATTERN,
+  normalizeEmail,
+  normalizePhone
+} = require("../utils/contactValidation");
 
 const userSchema = new mongoose.Schema(
   {
@@ -28,9 +34,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "An email address is required"],
       unique: true,
-      trim: true,
-      lowercase: true,
-      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please provide a valid email address"]
+      set: normalizeEmail,
+      match: [EMAIL_PATTERN, "Please provide a valid email address"]
+    },
+
+    phone: {
+      type: String,
+      required: [true, "A phone number is required"],
+      set: normalizePhone,
+      match: [PHONE_PATTERN, "Please provide a valid 10-digit phone number"]
     },
 
     password: {
@@ -53,6 +65,14 @@ const userSchema = new mongoose.Schema(
   {
     timestamps: true
   }
+);
+
+// The partial index permits older accounts without a phone number to continue
+// loading. Every new account still requires one, and saved phone numbers must
+// be unique.
+userSchema.index(
+  { phone: 1 },
+  { unique: true, partialFilterExpression: { phone: { $type: "string" } } }
 );
 
 // Hash the password before saving it to the database
