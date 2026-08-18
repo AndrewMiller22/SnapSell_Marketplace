@@ -1,3 +1,4 @@
+//mongoose plug in so that the Nodejs can communicate with mongodb
 const mongoose = require("mongoose");
 const { validateImages } = require("../utils/imageValidation");
 
@@ -23,6 +24,7 @@ const geoPointSchema = new mongoose.Schema(
   { _id: false }
 );
 
+//Describes the requirements of the listing objects 
 const listingSchema = new mongoose.Schema(
   {
     title: { type: String, required: [true, "A listing title is required"], trim: true, minlength: 3, maxlength: 100 },
