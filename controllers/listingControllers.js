@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Listing = require("../models/Listing");
-const { createHistoryEntry } = require("./historyController");
+const { createHistoryEntry } = require("./historyController");    
 const { validateImages } = require("../utils/imageValidation");
 
 const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
@@ -15,6 +15,7 @@ const getValidationMessage = (error) => {
     .join(". ");
 };
 
+//builds the rules for Mongodb to use to compaire required conditions
 const getListings = async (req, res) => {
   try {
     const now = new Date();
