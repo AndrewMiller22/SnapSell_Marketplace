@@ -1,4 +1,4 @@
-//
+//directs the http towards the controllers/listingControllers 
 
 const express = require("express");
 const {
