@@ -1,3 +1,5 @@
+//for users logged in , this section describes the messaging forms to be filled by a user reaching out to a listing
+
 const mongoose = require("mongoose");
 
 const questionSchema = new mongoose.Schema(

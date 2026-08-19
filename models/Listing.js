@@ -24,7 +24,7 @@ const geoPointSchema = new mongoose.Schema(
   { _id: false }
 );
 
-//Describes the requirements of the listing objects 
+// Describes the requirements that make up a listing
 const listingSchema = new mongoose.Schema(
   {
     title: { type: String, required: [true, "A listing title is required"], trim: true, minlength: 3, maxlength: 100 },

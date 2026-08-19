@@ -1,9 +1,31 @@
-﻿
+﻿/* */
 .hero-section {
-  background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
-  min-height: 320px;
+  min-height: 420px;
   display: flex;
   align-items: center;
+  background-color: #0d6efd;
+  /*Add blue tint to imported header image and 4th number row controls transparency levels */
+  background-image:    
+    linear-gradient(
+      90deg,
+      rgba(0, 45, 125, 0.7) 0%,
+      rgba(13, 110, 253, 0.72) 48%,
+      rgba(0, 55, 145, 0.88) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(0, 65, 180, 0.18) 0%,
+      rgba(0, 28, 85, 0.52) 100%
+    ),
+    url('/bluesea.png');
+  background-position: center, center, center 52%;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.hero-section h1,
+.hero-section .lead {
+  text-shadow: 0 2px 12px rgba(0, 20, 70, 0.75);
 }
 
 .hero-category-link {
