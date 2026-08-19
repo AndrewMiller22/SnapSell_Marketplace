@@ -3,10 +3,9 @@ import axios from 'axios';
 const BASE = import.meta.env.VITE_API_URL || '';
 const tokenConfig = (token) => ({ headers: { Authorization: `Bearer ${token}` } });
 
-// A valid token is required because anonymous visitors cannot send messages.
 export const submitQuestion = (listingId, form, token) =>
   axios
-    .post(`${BASE}/api/questions/listings/${listingId}`, form, tokenConfig(token))
+    .post(`${BASE}/api/questions/listings/${listingId}`, form, token ? tokenConfig(token) : {})
     .then((response) => response.data);
 
 export const fetchSellerQuestions = (token) =>

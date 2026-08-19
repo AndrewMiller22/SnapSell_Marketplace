@@ -97,7 +97,7 @@ const updateListing = async (req, res) => {
   try {
     if (!isValidId(req.params.id)) return res.status(400).json({ success: false, message: "Invalid listing ID" });
 
-    const allowedFields = ["title", "description", "price", "category", "condition", "location", "images", "activeDate", "expiryDate"];
+    const allowedFields = ["title", "description", "price", "category", "condition", "location", "images", "categoryDetails", "activeDate", "expiryDate"];
     const updates = {};
     allowedFields.forEach((field) => {
       if (req.body[field] !== undefined) updates[field] = req.body[field];

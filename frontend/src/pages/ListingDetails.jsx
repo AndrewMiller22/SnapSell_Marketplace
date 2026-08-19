@@ -9,12 +9,22 @@ import QuestionSection from '../components/QuestionSection';
 import ListingHistory from '../components/ListingHistory';
 import { useAuth } from '../context/AuthContext';
 
+const categoryDetailLabels = {
+  Vehicles: { year: 'Year', make: 'Make', model: 'Model', colour: 'Colour', mileage: 'Mileage', transmission: 'Transmission', fuelType: 'Fuel Type' },
+  Electronics: { brand: 'Brand', model: 'Model', storageCapacity: 'Storage', screenSize: 'Screen Size' },
+  'Home and Garden': { material: 'Material', dimensions: 'Dimensions', roomType: 'Room / Area' },
+  Clothing: { brand: 'Brand', size: 'Size', colour: 'Colour', gender: 'For' },
+  Sports: { brand: 'Brand', sportType: 'Sport', size: 'Size' },
+  Collectibles: { era: 'Era / Year', brand: 'Brand / Maker', material: 'Material' },
+};
+
 export default function ListingDetails() {
   const { id } = useParams();
   const { user } = useAuth();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
     fetchListingById(id)
@@ -53,10 +63,19 @@ export default function ListingDetails() {
     images,
     status,
     createdAt,
+    categoryDetails,
   } = listing;
 
   const ownerId = listing.owner?._id || listing.owner;
   const isOwner = Boolean(user?.id && ownerId && String(user.id) === String(ownerId));
+
+  const mediaList = images || [];
+  const activeMedia = mediaList[activeIdx] || null;
+  const isActiveVideo = activeMedia && activeMedia.startsWith('data:video/');
+  const detailLabels = categoryDetailLabels[category] || {};
+  const detailEntries = Object.entries(detailLabels).filter(
+    ([key]) => categoryDetails && categoryDetails[key]
+  );
 
   return (
     <div className="container my-5">
@@ -65,51 +84,57 @@ export default function ListingDetails() {
       </Link>
 
       <div className="row g-4">
-        {/* Image gallery / placeholder */}
-        <div className="col-lg-6">
-          {images && images.length > 0 ? (
-            <div
-              id="listingCarousel"
-              className="carousel slide border rounded shadow-sm"
-              data-bs-ride="carousel"
-            >
-              <div className="carousel-inner">
-                {images.map((src, i) => (
-                  <div
-                    key={i}
-                    className={`carousel-item${i === 0 ? ' active' : ''}`}
-                  >
-                    <img
-                      src={src}
-                      alt={`${title} – image ${i + 1}`}
-                      className="d-block w-100 listing-detail__img"
-                    />
-                  </div>
-                ))}
+        {/* Media gallery */}
+        <div className="col-lg-7">
+          {mediaList.length > 0 ? (
+            <>
+              {/* Main viewer */}
+              <div className="listing-detail__main-media border rounded-3 shadow-sm overflow-hidden mb-2">
+                {isActiveVideo ? (
+                  <video
+                    key={activeMedia}
+                    src={activeMedia}
+                    className="d-block w-100 listing-detail__img"
+                    controls
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    key={activeMedia}
+                    src={activeMedia}
+                    alt={`${title} – photo ${activeIdx + 1}`}
+                    className="d-block w-100 listing-detail__img"
+                  />
+                )}
               </div>
-              {images.length > 1 && (
-                <>
-                  <button
-                    className="carousel-control-prev"
-                    type="button"
-                    data-bs-target="#listingCarousel"
-                    data-bs-slide="prev"
-                  >
-                    <span className="carousel-control-prev-icon" />
-                    <span className="visually-hidden">Previous</span>
-                  </button>
-                  <button
-                    className="carousel-control-next"
-                    type="button"
-                    data-bs-target="#listingCarousel"
-                    data-bs-slide="next"
-                  >
-                    <span className="carousel-control-next-icon" />
-                    <span className="visually-hidden">Next</span>
-                  </button>
-                </>
+
+              {/* Thumbnail strip */}
+              {mediaList.length > 1 && (
+                <div className="listing-detail__thumbs d-flex gap-2 flex-wrap">
+                  {mediaList.map((src, i) => {
+                    const isVid = src.startsWith('data:video/');
+                    return (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setActiveIdx(i)}
+                        className={`listing-detail__thumb-btn p-0 border-0 rounded-2 overflow-hidden ${i === activeIdx ? 'listing-detail__thumb-btn--active' : ''}`}
+                        aria-label={`View ${isVid ? 'video' : 'photo'} ${i + 1}`}
+                      >
+                        {isVid ? (
+                          <div className="listing-detail__thumb-video-wrap">
+                            <video src={src} className="listing-detail__thumb" muted playsInline />
+                            <span className="listing-detail__thumb-play">▶</span>
+                          </div>
+                        ) : (
+                          <img src={src} alt={`Thumbnail ${i + 1}`} className="listing-detail__thumb" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               )}
-            </div>
+            </>
           ) : (
             <div className="listing-detail__placeholder d-flex align-items-center justify-content-center bg-light border rounded shadow-sm text-muted">
               <span className="display-1">📷</span>
@@ -117,8 +142,8 @@ export default function ListingDetails() {
           )}
         </div>
 
-        {/* Details */}
-        <div className="col-lg-6">
+        {/* Details panel */}
+        <div className="col-lg-5">
           <div className="d-flex align-items-start gap-2 mb-2">
             <h1 className="h3 fw-bold mb-0">{title}</h1>
             <StatusBadge status={status} />
@@ -134,6 +159,18 @@ export default function ListingDetails() {
 
             <dt className="col-5 text-muted">Condition</dt>
             <dd className="col-7">{condition}</dd>
+
+            {/* Category-specific fields */}
+            {detailEntries.map(([key, label]) => (
+              <>
+                <dt key={`dt-${key}`} className="col-5 text-muted">{label}</dt>
+                <dd key={`dd-${key}`} className="col-7">
+                  {key === 'mileage'
+                    ? `${Number(categoryDetails[key]).toLocaleString()} km`
+                    : categoryDetails[key]}
+                </dd>
+              </>
+            ))}
 
             <dt className="col-5 text-muted">Location</dt>
             <dd className="col-7">
@@ -165,10 +202,9 @@ export default function ListingDetails() {
               Edit Listing
             </Link>
           )}
-
         </div>
       </div>
-      {!isOwner && <QuestionSection listingId={id} />}
+      {!isOwner && <QuestionSection listingId={id} sellerName={sellerName} />}
       <ListingHistory listingId={id} />
     </div>
   );

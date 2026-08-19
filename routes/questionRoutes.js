@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect } = require("../middleware/authMiddleware");
+const { protect, optionalAuth } = require("../middleware/authMiddleware");
 const {
   createQuestion,
   getSellerQuestions,
@@ -8,9 +8,8 @@ const {
 
 const router = express.Router();
 
-// All messaging endpoints are protected. Messages are never exposed publicly.
 router.get("/seller", protect, getSellerQuestions);
-router.post("/listings/:listingId", protect, createQuestion);
+router.post("/listings/:listingId", optionalAuth, createQuestion); // guests allowed
 router.patch("/:id/answer", protect, answerQuestion);
 
 module.exports = router;

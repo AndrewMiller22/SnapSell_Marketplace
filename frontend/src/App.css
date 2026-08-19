@@ -160,3 +160,116 @@
 .listing-upload-remove:hover {
   background: #bb2d3b;
 }
+
+.listing-upload-cover-badge {
+  position: absolute;
+  bottom: 0.3rem;
+  left: 0.3rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  background: rgba(13, 110, 253, 0.85);
+  color: #fff;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.3rem;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+}
+
+.listing-upload-video-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.4rem;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.media-upload-zone {
+  border-style: dashed !important;
+  border-color: #ced4da !important;
+}
+
+/* ---- Listing detail gallery ---- */
+
+.listing-detail__main-media {
+  background: #f8f9fa;
+}
+
+.listing-detail__thumbs {
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.listing-detail__thumb-btn {
+  flex: 0 0 auto;
+  background: #f8f9fa;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s, box-shadow 0.15s;
+}
+
+.listing-detail__thumb-btn:hover {
+  opacity: 1;
+}
+
+.listing-detail__thumb-btn--active {
+  opacity: 1;
+  box-shadow: 0 0 0 2px #0d6efd;
+}
+
+.listing-detail__thumb {
+  width: 72px;
+  height: 56px;
+  object-fit: cover;
+  display: block;
+}
+
+.listing-detail__thumb-video-wrap {
+  position: relative;
+  width: 72px;
+  height: 56px;
+}
+
+.listing-detail__thumb-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 1rem;
+  background: rgba(0, 0, 0, 0.45);
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* ---- Listing card media count badge ---- */
+
+.listing-card__media-wrap {
+  overflow: hidden;
+}
+
+.listing-card__media-count {
+  position: absolute;
+  bottom: 0.4rem;
+  right: 0.4rem;
+  font-size: 0.7rem;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  padding: 0.15rem 0.45rem;
+  border-radius: 1rem;
+  pointer-events: none;
+}
+

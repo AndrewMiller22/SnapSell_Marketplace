@@ -16,10 +16,18 @@ const createQuestion = async (req, res) => {
       return res.status(404).json({ success: false, message: "Available listing not found" });
     }
 
+    // Use authenticated user's info when available, otherwise trust submitted fields
+    const askerName = req.user?.fullName || req.body.askerName;
+    const askerEmail = req.user?.email || req.body.askerEmail || "";
+
+    if (!askerName || String(askerName).trim().length < 2) {
+      return res.status(400).json({ success: false, message: "Your name is required" });
+    }
+
     const question = await Question.create({
       listing: listing._id,
-      askerName: req.body.askerName,
-      askerEmail: req.body.askerEmail || "",
+      askerName: String(askerName).trim(),
+      askerEmail,
       question: req.body.question
     });
 

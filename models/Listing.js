@@ -1,6 +1,7 @@
 //mongoose plug in so that the Nodejs can communicate with mongodb
 const mongoose = require("mongoose");
 const { validateImages } = require("../utils/imageValidation");
+const { MAX_MEDIA_COUNT } = require("../utils/imageValidation");
 
 const geoPointSchema = new mongoose.Schema(
   {
@@ -48,9 +49,10 @@ const listingSchema = new mongoose.Schema(
       default: [],
       validate: {
         validator: (images) => validateImages(images).valid,
-        message: "Listings may only contain up to three valid JPG, PNG, WEBP or GIF photos"
+        message: `Listings may only contain up to ${MAX_MEDIA_COUNT} valid photos or videos`
       }
     },
+    categoryDetails: { type: mongoose.Schema.Types.Mixed, default: {} },
     status: { type: String, enum: ["Available", "Pending", "Sold", "Expired"], default: "Available" },
     activeDate: { type: Date, default: Date.now },
     expiryDate: {

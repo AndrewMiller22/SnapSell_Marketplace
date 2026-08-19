@@ -57,4 +57,28 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+// Sets req.user if a valid Bearer token is present, but never rejects the request.
+const optionalAuth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return next();
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (user) {
+      req.user = {
+        id: user._id.toString(),
+        username: user.username,
+        email: user.email,
+        phone: user.phone || "",
+        fullName: user.fullName
+      };
+    }
+  } catch {
+    // invalid/expired token — proceed as guest
+  }
+  next();
+};
+
+module.exports = { protect, optionalAuth };
