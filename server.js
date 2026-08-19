@@ -32,9 +32,9 @@ const app = express();
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "http://localhost:5173"
 }));
-// Photo attachments are sent as data URLs. Three 3 MB files encode to roughly
-// 12 MB, so this stays below MongoDB's 16 MB document limit.
-app.use(express.json({ limit: "15mb" }));
+// Media attachments are sent as data URLs. Up to 8 items at 3 MB each encodes to
+// roughly 32 MB; set limit generously to handle mixed image/video payloads.
+app.use(express.json({ limit: "50mb" }));
 
 // --- API status ---
 
