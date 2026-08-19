@@ -9,14 +9,14 @@ const categoryHighlight = (category, details) => {
     case 'Vehicles': {
       const parts = [details.year, details.make, details.model].filter(Boolean);
       const sub = [details.colour, details.mileage ? `${Number(details.mileage).toLocaleString()} km` : null].filter(Boolean);
-      return { primary: parts.join(' '), secondary: sub.join(' Â· ') };
+      return { primary: parts.join(' '), secondary: sub.join(' · ') };
     }
     case 'Electronics':
       return { primary: [details.brand, details.model].filter(Boolean).join(' '), secondary: details.storageCapacity || '' };
     case 'Clothing':
-      return { primary: details.brand || '', secondary: [details.size, details.colour, details.gender].filter(Boolean).join(' Â· ') };
+      return { primary: details.brand || '', secondary: [details.size, details.colour, details.gender].filter(Boolean).join(' · ') };
     case 'Sports':
-      return { primary: details.brand || '', secondary: [details.sportType, details.size].filter(Boolean).join(' Â· ') };
+      return { primary: details.brand || '', secondary: [details.sportType, details.size].filter(Boolean).join(' · ') };
     case 'Collectibles':
       return { primary: details.era || '', secondary: details.brand || '' };
     case 'Home and Garden':
@@ -55,12 +55,12 @@ export default function ListingCard({ listing }) {
             )
           ) : (
             <div className="listing-card__placeholder d-flex align-items-center justify-content-center bg-light text-muted">
-              <span className="fs-1">ðŸ“·</span>
+              <span className="fs-1">📷</span>
             </div>
           )}
           {mediaCount > 1 && (
             <span className="listing-card__media-count">
-              ðŸ–¼ {mediaCount}
+              🖼 {mediaCount}
             </span>
           )}
         </div>
@@ -82,7 +82,7 @@ export default function ListingCard({ listing }) {
             {category} &bull; {condition}
           </p>
           <p className="text-muted small mb-2">
-            ðŸ“ {location?.city || location?.address || 'Location not specified'}
+            📍 {location?.city || location?.address || 'Location not specified'}
           </p>
 
           <p className="fw-bold text-primary fs-5 mt-auto mb-0">

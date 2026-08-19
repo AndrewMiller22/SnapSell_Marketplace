@@ -33,25 +33,25 @@ const categoryFields = {
     { name: 'screenSize', label: 'Screen Size', type: 'text', placeholder: '6.1"', col: 'col-md-4' },
   ],
   'Home and Garden': [
-    { name: 'material', label: 'Material', type: 'text', placeholder: 'Wood, Metalâ€¦', col: 'col-md-4' },
+    { name: 'material', label: 'Material', type: 'text', placeholder: 'Wood, Metal...', col: 'col-md-4' },
     { name: 'dimensions', label: 'Dimensions', type: 'text', placeholder: '60" Ã— 30" Ã— 36"', col: 'col-md-4' },
-    { name: 'roomType', label: 'Room / Area', type: 'text', placeholder: 'Living Room, Gardenâ€¦', col: 'col-md-4' },
+    { name: 'roomType', label: 'Room / Area', type: 'text', placeholder: 'Living Room, Garden...', col: 'col-md-4' },
   ],
   Clothing: [
     { name: 'brand', label: 'Brand', type: 'text', placeholder: 'Nike', col: 'col-md-3' },
-    { name: 'size', label: 'Size', type: 'text', placeholder: 'M / 32Ã—32â€¦', col: 'col-md-3' },
+    { name: 'size', label: 'Size', type: 'text', placeholder: 'M / 32x32...', col: 'col-md-3' },
     { name: 'colour', label: 'Colour', type: 'text', placeholder: 'Black', col: 'col-md-3' },
     { name: 'gender', label: 'For', type: 'select', options: ['', 'Men', 'Women', 'Unisex', 'Kids'], col: 'col-md-3' },
   ],
   Sports: [
     { name: 'brand', label: 'Brand', type: 'text', placeholder: 'Adidas', col: 'col-md-4' },
-    { name: 'sportType', label: 'Sport', type: 'text', placeholder: 'Soccer, Basketballâ€¦', col: 'col-md-4' },
-    { name: 'size', label: 'Size', type: 'text', placeholder: 'Medium / 10â€¦', col: 'col-md-4' },
+    { name: 'sportType', label: 'Sport', type: 'text', placeholder: 'Soccer, Basketball...', col: 'col-md-4' },
+    { name: 'size', label: 'Size', type: 'text', placeholder: 'Medium / 10...', col: 'col-md-4' },
   ],
   Collectibles: [
     { name: 'era', label: 'Era / Year', type: 'text', placeholder: '1980s', col: 'col-md-4' },
-    { name: 'brand', label: 'Brand / Maker', type: 'text', placeholder: 'Marvel, Hasbroâ€¦', col: 'col-md-4' },
-    { name: 'material', label: 'Material', type: 'text', placeholder: 'Metal, Plasticâ€¦', col: 'col-md-4' },
+    { name: 'brand', label: 'Brand / Maker', type: 'text', placeholder: 'Marvel, Hasbro...', col: 'col-md-4' },
+    { name: 'material', label: 'Material', type: 'text', placeholder: 'Metal, Plastic...', col: 'col-md-4' },
   ],
 };
 
@@ -285,7 +285,7 @@ export default function CreateListing() {
   };
 
   if (loading) {
-    return <div className="container my-5 text-center text-muted">Loading listingâ€¦</div>;
+    return <div className="container my-5 text-center text-muted">Loading listing...</div>;
   }
 
   if (loadError) {
@@ -431,10 +431,10 @@ export default function CreateListing() {
                         className={`btn btn-outline-primary me-2 mb-2 ${submitting || media.length >= maxMediaCount ? 'disabled' : ''}`}
                         htmlFor="listingMedia"
                       >
-                        ðŸ“Ž Add Photos / Videos
+                        📎 Add Photos / Videos
                       </label>
                       <span className="text-muted small">
-                        {media.length}/{maxMediaCount} added &nbsp;Â·&nbsp; JPG, PNG, WEBP, GIF up to 3 MB &nbsp;Â·&nbsp; MP4, WebM, MOV up to 10 MB
+                        {media.length}/{maxMediaCount} added &nbsp;&middot;&nbsp; JPG, PNG, WEBP, GIF up to 3 MB &nbsp;&middot;&nbsp; MP4, WebM, MOV up to 10 MB
                       </span>
 
                       {mediaError && <div className="text-danger small mt-2" role="alert">{mediaError}</div>}
@@ -495,7 +495,7 @@ export default function CreateListing() {
                     </button>
                     <button type="submit" className="btn btn-primary px-4" disabled={submitting}>
                       {submitting
-                        ? (isEditMode ? 'Savingâ€¦' : 'Postingâ€¦')
+                        ? (isEditMode ? 'Saving...' : 'Posting...')
                         : (isEditMode ? 'Save Changes' : 'Post Listing')}
                     </button>
                   </div>
