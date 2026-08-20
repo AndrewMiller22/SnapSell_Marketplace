@@ -39,15 +39,12 @@ export default function ListingDetails() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // reset gallery index whenever we navigate to a different listing
-  useEffect(() => { setActiveIdx(0); }, [id]);
-
   if (loading) return <div className="container my-5"><LoadingSpinner /></div>;
 
-  if (error || !listing) {
+  if (error) {
     return (
       <div className="container my-5">
-        <div className="alert alert-danger">{error || 'This listing could not be loaded.'}</div>
+        <div className="alert alert-danger">{error}</div>
         <Link to="/marketplace" className="btn btn-outline-primary">
           ← Back to Marketplace
         </Link>
