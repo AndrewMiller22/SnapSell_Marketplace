@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 router.get("/seller", protect, getSellerQuestions);
-router.post("/listings/:listingId", optionalAuth, createQuestion); // guests allowed
+router.post("/listings/:listingId", protect, createQuestion);
 router.patch("/:id/answer", protect, answerQuestion);
 
 module.exports = router;

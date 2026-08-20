@@ -1,33 +1,28 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { submitQuestion } from '../api/questionsApi';
 import { useAuth } from '../context/AuthContext';
 
 export default function QuestionSection({ listingId, sellerName }) {
   const { token, user } = useAuth();
   const [question, setQuestion] = useState('');
-  const [guestName, setGuestName] = useState('');
-  const [guestEmail, setGuestEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!user) {
+      setShowModal(true);
+      return;
+    }
     setSubmitting(true);
     setMessage('');
     setError('');
-
-    const form = { question };
-    if (!user) {
-      form.askerName = guestName;
-      form.askerEmail = guestEmail;
-    }
-
     try {
-      await submitQuestion(listingId, form, token);
+      await submitQuestion(listingId, { question }, token);
       setQuestion('');
-      setGuestName('');
-      setGuestEmail('');
       setMessage('Your message was sent to the seller.');
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Could not send your message.');
@@ -47,55 +42,75 @@ export default function QuestionSection({ listingId, sellerName }) {
         {message && <div className="alert alert-success py-2">{message}</div>}
         {error && <div className="alert alert-danger py-2">{error}</div>}
 
-        {!user && (
-          <div className="row g-2 mb-3">
-            <div className="col-sm-6">
-              <label className="form-label" htmlFor="guestName">Your name <span className="text-danger">*</span></label>
-              <input
-                id="guestName"
-                className="form-control"
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                minLength="2"
-                maxLength="80"
-                required
-              />
-            </div>
-            <div className="col-sm-6">
-              <label className="form-label" htmlFor="guestEmail">Email <span className="text-muted">(optional)</span></label>
-              <input
-                id="guestEmail"
-                type="email"
-                className="form-control"
-                value={guestEmail}
-                onChange={(e) => setGuestEmail(e.target.value)}
-                maxLength="120"
-              />
-            </div>
-          </div>
-        )}
-
         {user && (
-          <p className="small text-muted mb-2">Sending as <strong>{user.fullName || user.username}</strong></p>
+          <p className="small text-muted mb-2">
+            Sending as <strong>{user.fullName || user.username}</strong>
+          </p>
         )}
 
         <label className="form-label" htmlFor="question">Message</label>
         <textarea
           id="question"
-          name="question"
           className="form-control mb-3"
           rows="3"
           value={question}
-          onChange={(event) => setQuestion(event.target.value)}
-          minLength="5"
+          onChange={(e) => setQuestion(e.target.value)}
+          minLength={user ? 5 : undefined}
           maxLength="500"
-          required
+          required={!!user}
+          placeholder={!user ? 'Sign in to send a message…' : ''}
         />
 
-        <button className="btn btn-primary" disabled={submitting}>
+        <button className="btn btn-primary" type="submit" disabled={submitting}>
           {submitting ? 'Sending…' : 'Send message'}
         </button>
       </form>
+
+      {showModal && (
+        <>
+          <div
+            className="modal fade show d-block"
+            tabIndex="-1"
+            onClick={(e) => { if (e.target === e.currentTarget) setShowModal(false); }}
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-header border-0 pb-0">
+                  <h5 className="modal-title fw-bold">Sign in to send a message</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowModal(false)} />
+                </div>
+                <div className="modal-body pt-3 pb-4">
+                  <div className="row g-0">
+                    <div className="col-sm-6 text-center pe-sm-3 border-end">
+                      <h6 className="fw-semibold mb-1">New here?</h6>
+                      <p className="small text-muted mb-3">Create a free account to message sellers.</p>
+                      <Link
+                        to="/register"
+                        className="btn btn-primary w-100"
+                        onClick={() => setShowModal(false)}
+                      >
+                        Register account
+                      </Link>
+                    </div>
+                    <div className="col-sm-6 text-center ps-sm-3 mt-4 mt-sm-0">
+                      <h6 className="fw-semibold mb-1">Have an account?</h6>
+                      <p className="small text-muted mb-3">Log in to continue.</p>
+                      <Link
+                        to="/login"
+                        className="btn btn-outline-primary w-100"
+                        onClick={() => setShowModal(false)}
+                      >
+                        Log in
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show" />
+        </>
+      )}
     </section>
   );
 }
