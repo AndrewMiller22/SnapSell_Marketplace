@@ -48,8 +48,8 @@ const getListings = async (req, res) => {
 const getListingById = async (req, res) => {
   try {
     if (!isValidId(req.params.id)) return res.status(400).json({ success: false, message: "Invalid listing ID" });
-    const listing = await Listing.findOne({ _id: req.params.id, status: "Available" }).populate("owner", "username fullName");
-    if (!listing) return res.status(404).json({ success: false, message: "Available listing not found" });
+    const listing = await Listing.findById(req.params.id).populate("owner", "username fullName");
+    if (!listing) return res.status(404).json({ success: false, message: "Listing not found" });
     res.status(200).json({ success: true, data: listing });
   } catch (error) {
     res.status(500).json({ success: false, message: "Unable to retrieve the listing", error: error.message });
