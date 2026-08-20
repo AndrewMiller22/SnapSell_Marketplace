@@ -41,10 +41,10 @@ export default function ListingDetails() {
 
   if (loading) return <div className="container my-5"><LoadingSpinner /></div>;
 
-  if (error) {
+  if (error || !listing) {
     return (
       <div className="container my-5">
-        <div className="alert alert-danger">{error}</div>
+        <div className="alert alert-danger">{error || 'This listing could not be loaded.'}</div>
         <Link to="/marketplace" className="btn btn-outline-primary">
           ← Back to Marketplace
         </Link>
