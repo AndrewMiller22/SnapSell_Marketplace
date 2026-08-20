@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { submitQuestion } from '../api/questionsApi';
 import { useAuth } from '../context/AuthContext';
 
-export default function QuestionSection({ listingId }) {
+export default function QuestionSection({ listingId, sellerName }) {
   const { token, user } = useAuth();
   const [question, setQuestion] = useState('');
   const [guestName, setGuestName] = useState('');
